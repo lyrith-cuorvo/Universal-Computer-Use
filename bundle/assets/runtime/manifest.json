@@ -1,0 +1,9 @@
+{
+  "schema": "u2c.skill-runtime.v0",
+  "version": "0.3.0.dev0",
+  "wheel": "wheels/ress_u2c-0.3.0.dev0-py3-none-any.whl",
+  "wheel_sha256": "3b40b4127e344581b287294c3894e730c1b07a8c6259e243a30d3a80509932d7",
+  "wheelhouse": "wheelhouse",
+  "wheelhouse_manifest_sha256": "41329a5d7118b056403bda87aa2f0f832329ec728b4e62090a3693e0ec98892b",
+  "installer": "install.ps1"
+}
