@@ -7,7 +7,7 @@ pixels and drive mouse and keyboard.
 - Platform: Windows 10/11 (x64), Python **3.11+**
 - License: Apache-2.0 (see `LICENSE`, `NOTICE` in the bundle)
 - No model service, no telemetry, no network listener
-- Bundle layout: `install_u2c.py` + `bundle/assets/runtime/` (verified wheel + wheelhouse) + `bundle/patches/u2c-patched/`
+- Bundle layout: `install_u2c.py` + `bundle/assets/runtime/` (verified 0.1.0 wheel + wheelhouse)
 
 Read this file top to bottom once, then follow §2. Do not skip §1 and §3.
 
@@ -42,7 +42,7 @@ py -3.14 install_u2c.py --root C:\Tools\u2c --bundle bundle
 
 1. verifies `assets/runtime/manifest.json`, the wheel SHA-256 and the wheelhouse manifest;
 2. creates a private venv under `<root>\versions\...` (no global install, no PATH change);
-3. applies the patched overlay from `patches/u2c-patched/`;
+3. installs the verified `ress_u2c-0.1.0` wheel;
 4. writes `<root>\u2c-medium.cmd` (medium-integrity launcher) and `<root>\state`;
 5. runs `doctor` and prints a JSON summary.
 
@@ -52,14 +52,13 @@ Expected result (exit code **0**):
 {
   "status": "READY",
   "changed": true,
-  "version": "0.3.0.dev0+dsh.3",
-  "cli": "C:\\Tools\\u2c\\versions\\0.3.0.dev0-3b40b4127e34\\venv\\Scripts\\u2c.exe",
+  "version": "0.1.0",
+  "cli": "C:\\Tools\\u2c\\versions\\0.1.0-23884ee9729d\\venv\\Scripts\\u2c.exe",
   "launcher": "C:\\Tools\\u2c\\u2c-medium.cmd",
-  "python": "C:\\Tools\\u2c\\versions\\0.3.0.dev0-3b40b4127e34\\venv\\Scripts\\python.exe",
+  "python": "C:\\Tools\\u2c\\versions\\0.1.0-23884ee9729d\\venv\\Scripts\\python.exe",
   "state_dir": "C:\\Tools\\u2c\\state",
   "integrity": "medium",
   "input_integrity_ok": true,
-  "patched": true,
   "warnings": []
 }
 ```

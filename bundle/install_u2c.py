@@ -68,7 +68,7 @@ def main():
     manifest_path = assets / "manifest.json"
     if not manifest_path.is_file():
         fail(f"missing runtime manifest: {manifest_path}")
-    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8-sig"))
     if manifest.get("schema") != "u2c.skill-runtime.v0":
         fail("unknown runtime manifest schema")
 
@@ -156,8 +156,6 @@ def main():
         warnings.append(
             f"launcher ran at '{integrity}' integrity; desktop input needs medium integrity. "
             "Run it from an unsandboxed host shell or a normal terminal.")
-    if not patched_applied:
-        warnings.append("patched overlay not found; installed the unpatched bundle")
 
     summary = {
         "status": "READY" if input_ok else "INSTALLED_INPUT_BLOCKED",
@@ -169,7 +167,6 @@ def main():
         "state_dir": str(state),
         "integrity": integrity,
         "input_integrity_ok": input_ok,
-        "patched": patched_applied,
         "warnings": warnings,
     }
     print(json.dumps(summary, indent=2))
