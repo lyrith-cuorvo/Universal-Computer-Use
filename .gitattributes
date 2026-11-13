@@ -1,0 +1,3 @@
+# Bundle artifacts must stay byte-exact: line-ending conversion breaks SHA-256 checks.
+bundle/** -text
+*.whl binary

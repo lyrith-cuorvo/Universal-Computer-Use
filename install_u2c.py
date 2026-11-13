@@ -32,6 +32,18 @@ def run(command, **kwargs):
     return subprocess.run(command, check=True, capture_output=True, text=True, **kwargs)
 
 
+def line_ending_hint(path):
+    """Explain the class of failure caused by git rewriting bundle text files."""
+    try:
+        data = Path(path).read_bytes()
+    except OSError:
+        return ""
+    if b"\r\n" in data:
+        return (" (CRLF line endings detected: git converted this file. Re-clone with "
+                "`git -c core.autocrlf=false clone ...`, or keep the repository's .gitattributes)")
+    return ""
+
+
 def fail(message):
     print(json.dumps({"status": "FAIL", "error": message}, indent=2))
     raise SystemExit(1)
@@ -62,12 +74,12 @@ def main():
 
     wheel = assets / manifest["wheel"]
     if sha256(wheel) != manifest["wheel_sha256"].lower():
-        fail("WHEEL_HASH_MISMATCH")
+        fail("WHEEL_HASH_MISMATCH" + line_ending_hint(wheel))
 
     wheelhouse = assets / manifest["wheelhouse"]
     sums = wheelhouse / "SHA256SUMS"
     if sha256(sums) != manifest["wheelhouse_manifest_sha256"].lower():
-        fail("WHEELHOUSE_MANIFEST_HASH_MISMATCH")
+        fail("WHEELHOUSE_MANIFEST_HASH_MISMATCH" + line_ending_hint(sums))
     listed = {}
     for line in sums.read_text(encoding="utf-8").splitlines():
         if not line.strip():
