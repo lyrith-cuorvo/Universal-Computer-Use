@@ -7,8 +7,8 @@
 A local, screenshot-grounded Windows GUI runtime: an AI observes the real desktop as pixels and drives the mouse and keyboard. No model service, no telemetry, no network listener.
 
 - Requirements: Windows 10/11 x64 and **64-bit CPython 3.14** for the current offline bundle. The Python package metadata declares Python `>=3.11`, but the bundled offline wheelhouse currently provides a CPython 3.14 Pillow wheel only.
-- Install: `py -3.14 install_u2c.py --root C:\\Tools\\u2c --bundle bundle`
-- Verify: `C:\\Tools\\u2c\\u2c-medium.cmd doctor --json`
+- Install: `py -3.14 install_u2c.py --root C:\Tools\u2c --bundle bundle`
+- Verify: `C:\Tools\u2c\u2c-medium.cmd doctor --json`
 - License: Apache-2.0 (see [LICENSE](LICENSE) and [NOTICE](NOTICE))
 
 ## Source code and release artifacts
@@ -18,7 +18,7 @@ The public release wheel at `bundle/assets/runtime/wheels/ress_u2c-0.1.0-py3-non
 To inspect the package source, extract the wheel:
 
 ```powershell
-py -3.14 -m zipfile -e bundle/assets/runtime/wheels/ress_u2c-0.1.0-py3-none-any.whl .\\u2c-wheel-source
+py -3.14 -m zipfile -e bundle/assets/runtime/wheels/ress_u2c-0.1.0-py3-none-any.whl .\u2c-wheel-source
 ```
 
 The bundled Pillow wheel is platform- and interpreter-specific (`cp314-win_amd64`), which is why the current offline installer requires 64-bit CPython 3.14 even though the Python package itself declares a broader Python version range.
