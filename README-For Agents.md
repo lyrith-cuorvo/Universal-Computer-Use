@@ -1,8 +1,10 @@
-# U2C â€?README for Agents
+# UCU / U2C — README for Agents
 
-Machine-oriented installation and operating guide for **U2C (Universal Computer Use)**:
+Machine-oriented installation and operating guide for **UCU (also referred to as U2C in the package and CLI identifiers)**:
 a local, screenshot-grounded Windows GUI runtime that lets an AI host observe real
 pixels and drive mouse and keyboard.
+
+UCU and U2C are the same project, not separate implementations. Keep the existing `u2c` package, command, environment-variable and launcher names when following the steps below.
 
 - Platform: Windows 10/11 (x64), **64-bit CPython 3.14** for the current offline bundle
 - License: Apache-2.0 (see `LICENSE`, `NOTICE` in the bundle)

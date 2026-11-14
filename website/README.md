@@ -1,13 +1,13 @@
 # UCU Website
 
-Official site for **RESS — Universal Computer Use**.
+Official website for **RESS — Universal Computer Use (UCU)**.
 
 - Primary hostname: https://ucu.ress.ink
 - Cloudflare Worker: `ress-ucu-site`
-- This directory includes the standalone landing page (`index.html`) and the Worker entrypoint (`worker.js`).
-- Deployment is to a Cloudflare Worker with `worker.js` as the main module and `index.html` as an imported text module.
+- `index.html` and `worker.js` in this directory are synchronized with the deployed landing page and Worker entrypoint.
+- Deployment uses `worker.js` as the Worker module and imports `index.html` as a text module.
+- The page links directly to the public source repository: https://github.com/lyrith-cuorvo/Universal-Computer-Use
+- UCU and U2C are the same project. The Python distribution/package/CLI retain the `ress-u2c` and `u2c` identifiers.
+- The public release wheel includes the readable Python runtime source package; the landing page is informational and does not itself execute desktop-control actions.
 - No analytics, cookies, remote desktop access or model API calls are implemented by this website.
 - Language selector: English / 简体中文.
-- This website is a **development preview**, not a released installable UCU runtime.
-
-The execution architecture is conceptual and does not claim the UCU application is ready for production.
