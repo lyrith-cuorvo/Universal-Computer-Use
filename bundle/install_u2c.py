@@ -117,6 +117,9 @@ def main():
                           encoding="utf-8")
         changed = True
 
+    # The launcher imports the installed package from this private venv.
+    site_packages = install_root / "venv" / "Lib" / "site-packages"
+
     state = Path(args.state).resolve() if args.state else root / "state"
     state.mkdir(parents=True, exist_ok=True)
     launcher = root / "u2c-medium.cmd"
