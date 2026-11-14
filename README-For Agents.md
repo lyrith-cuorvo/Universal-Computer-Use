@@ -1,15 +1,20 @@
-# U2C �?README for Agents
+# U2C â€?README for Agents
 
 Machine-oriented installation and operating guide for **U2C (Universal Computer Use)**:
 a local, screenshot-grounded Windows GUI runtime that lets an AI host observe real
 pixels and drive mouse and keyboard.
 
-- Platform: Windows 10/11 (x64), Python **3.11+**
+- Platform: Windows 10/11 (x64), **64-bit CPython 3.14** for the current offline bundle
 - License: Apache-2.0 (see `LICENSE`, `NOTICE` in the bundle)
 - No model service, no telemetry, no network listener
 - Bundle layout: `install_u2c.py` + `bundle/assets/runtime/` (verified 0.1.0 wheel + wheelhouse)
 
-Read this file top to bottom once, then follow §2. Do not skip §1 and §3.
+**Offline compatibility:** the bundled wheelhouse contains
+`pillow-12.3.0-cp314-cp314-win_amd64.whl`. This bundle is for 64-bit CPython
+3.14 only. It cannot install that wheel using Python 3.11–3.13 or 32-bit Python.
+The installer checks the interpreter version and bitness before installing.
+
+Read this file top to bottom once, then follow Â§2. Do not skip Â§1 and Â§3.
 
 ---
 
@@ -19,16 +24,17 @@ Read this file top to bottom once, then follow §2. Do not skip §1 and §3.
 # Windows?
 $env:OS                                  # expect Windows_NT
 
-# Python 3.11+ present
-py -3.14 -c "import sys; print(sys.version)"
+# 64-bit Python 3.14 present
+py -3.14 -c "import sys, struct; print(sys.version); print('bitness:', struct.calcsize('P') * 8)"
+# Expect CPython 3.14 and "bitness: 64"
 ```
 
 Requirements that cannot be checked by a command:
 
 - an **unlocked, interactive** desktop on `WinSta0\Default` (not a lock screen or service session);
-- the process must run at **medium integrity** to inject input (see §6);
+- the process must run at **medium integrity** to inject input (see Â§6);
 - you must be able to open a PNG returned by the runtime with an image tool. If you
-  cannot actually see pixels, **stop** �?receipts alone do not prove success.
+  cannot actually see pixels, **stop** â€?receipts alone do not prove success.
 
 ---
 
@@ -68,7 +74,7 @@ Interpretation:
 | status | exit | meaning |
 |---|---|---|
 | `READY` | 0 | usable now |
-| `INSTALLED_INPUT_BLOCKED` | 2 | installed, but the host ran it at low integrity; input will be refused �?see §6 |
+| `INSTALLED_INPUT_BLOCKED` | 2 | installed, but the host ran it at low integrity; input will be refused â€?see Â§6 |
 | `FAIL` | 1 | installation error; report `error` verbatim |
 
 Re-running the same command is idempotent (`"changed": false`).
@@ -93,13 +99,13 @@ $U2C = "C:\Tools\u2c\u2c-medium.cmd"
 & $U2C benchmark --suite smoke --iterations 3 --json
 ```
 
-If 3.1 reports `input_integrity_ok: false`, do not send input: fix integrity (§6).
+If 3.1 reports `input_integrity_ok: false`, do not send input: fix integrity (Â§6).
 
 ---
 
 ## 4. Operating loop
 
-`OBSERVE �?REASON �?ACT �?VERIFY`. Every action is bound to one screenshot.
+`OBSERVE â†?REASON â†?ACT â†?VERIFY`. Every action is bound to one screenshot.
 
 ```powershell
 # 1) observe
@@ -134,21 +140,21 @@ Rules that matter in practice:
 - **One intended action per request.** Batches stop after a visible change; that is
   normal (`status: observe_required`), not a failure.
 - `status: observe_required` and `stop_reason: focus_changed_after_input` mean the
-  input landed but the foreground changed �?reobserve and continue.
+  input landed but the foreground changed â€?reobserve and continue.
 - Never reuse a `frame_id`; every `act` consumes it. Frame lifetime defaults to 30 s
   (`--frame-ttl` at observe time, up to 300).
 - `guard` profiles (chosen at observe):
-  - `strict` �?exact pixels; only for truly static regions;
-  - `auto` (default) �?relaxes only when two fresh captures prove the scope is animating
+  - `strict` â€?exact pixels; only for truly static regions;
+  - `auto` (default) â€?relaxes only when two fresh captures prove the scope is animating
     (Wallpaper Engine, video). A change that settled still requires a new observation;
-  - `relaxed` �?geometry + foreground only.
+  - `relaxed` â€?geometry + foreground only.
 - Typing: `{"type":"type","text":"..."}` defaults to Unicode injection; Chromium drops
   bursts, so the runtime paces characters (`U2C_TYPE_DELAY_MS`, default 12).
 - Clicking a window other than the foreground one: prefer
   `observe --window-client <HWND>` + `act --activate-target`.
 
 Foreground focus must be **stable** between observe and act. If the desktop owner is
-working, expect `FOCUS_LOST` �?retry after a quiet moment rather than guessing.
+working, expect `FOCUS_LOST` â€?retry after a quiet moment rather than guessing.
 
 ---
 
@@ -157,8 +163,8 @@ working, expect `FOCUS_LOST` �?retry after a quiet moment rather than guessing.
 | Variable | Purpose | Default |
 |---|---|---|
 | `U2C_STATE_DIR` | session/frame store; required when the host cannot write `%LOCALAPPDATA%` | `%LOCALAPPDATA%\RESS\U2C` |
-| `U2C_TYPE_DELAY_MS` | pacing between typed characters, 0�?00 | `12` |
-| `PYTHONPATH` | set by `u2c-medium.cmd`; do not set manually | �?|
+| `U2C_TYPE_DELAY_MS` | pacing between typed characters, 0â€?00 | `12` |
+| `PYTHONPATH` | set by `u2c-medium.cmd`; do not set manually | â€?|
 
 Use one state directory per task; do not share one across concurrent sessions
 (`SESSION_BUSY` is a real lock, not a bug).
@@ -171,8 +177,8 @@ Windows UIPI silently drops synthetic input from a lower-integrity process: `Sen
 can return success while nothing happens. U2C therefore reports the process integrity in
 `doctor` and refuses input with `PERMISSION_DENIED` when it is below medium.
 
-- Normal terminal / unprivileged app: medium �?works.
-- Sandboxed host shells (for example a DSH `workspace-write` tool shell): low �?input is
+- Normal terminal / unprivileged app: medium â€?works.
+- Sandboxed host shells (for example a DSH `workspace-write` tool shell): low â€?input is
   refused by design. Run the launcher from an **unsandboxed** command (e.g. DSH
   `danger-full-access`) or from a user terminal.
 - Executables **stored inside a sandboxed workspace** may be started at low integrity even
@@ -227,7 +233,7 @@ Never try to bypass integrity restrictions; report `INSTALLED_INPUT_BLOCKED` ins
 ```json
 {
   "steps": [
-    {"id": "preflight", "run": "py -3.14 -c \"import sys; print(sys.version)\"", "expect": "3.11+"},
+    {"id": "preflight", "run": "py -3.14 -c \"import sys, struct; print(sys.version); print(struct.calcsize('P') * 8)\"", "expect": "Python 3.14, 64-bit"},
     {"id": "install", "run": "py -3.14 install_u2c.py --root C:\\\\Tools\\\\u2c --bundle bundle", "expect": "status READY, exit 0"},
     {"id": "doctor", "run": "C:\\\\Tools\\\\u2c\\\\u2c-medium.cmd doctor --json", "expect": "status ok, integrity medium, input_integrity_ok true"},
     {"id": "observe", "run": "C:\\\\Tools\\\\u2c\\\\u2c-medium.cmd observe --mode safe --guard auto --json", "expect": "status ok + real PNG viewed"},

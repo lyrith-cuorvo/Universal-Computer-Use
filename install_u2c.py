@@ -2,9 +2,8 @@
 """Agent-facing U2C installer.
 
 Reads the verified bundle manifest, installs the wheel into a private venv,
-applies the development patch overlay, writes a medium-integrity launcher and
-runs ``doctor``. Nothing is installed globally, PATH is not modified and no
-directory is deleted.
+writes a medium-integrity launcher and runs ``doctor``. Nothing is installed
+globally, PATH is not modified and no directory is deleted.
 
 Usage:
     python install_u2c.py --root C:\\Tools\\u2c [--bundle DIR] [--state DIR]
@@ -53,14 +52,17 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--root", required=True, help="absolute runtime root")
     parser.add_argument("--bundle", default=str(Path(__file__).resolve().parent),
-                        help="directory containing assets/runtime and patches/")
+                        help="directory containing assets/runtime")
     parser.add_argument("--state", default=None, help="U2C state directory")
     args = parser.parse_args()
 
     if sys.platform != "win32":
         fail("U2C requires Windows 10/11.")
-    if sys.version_info < (3, 11):
-        fail("Python 3.11+ is required.")
+    # Bundled offline Pillow is cp314-win_amd64: validate before creating a venv.
+    if sys.version_info[:2] != (3, 14):
+        fail("This offline bundle requires Python 3.14 (64-bit). Use py -3.14.")
+    if sys.maxsize <= 2**32:
+        fail("This offline bundle requires 64-bit Python 3.14.")
 
     root = Path(args.root).resolve()
     bundle = Path(args.bundle).resolve()
@@ -115,22 +117,6 @@ def main():
                           encoding="utf-8")
         changed = True
 
-    # Development overlay: keep the patched runtime that the bug-fix work produced.
-    site_packages = install_root / "venv" / "Lib" / "site-packages"
-    patched = bundle / "patches" / "u2c-patched"
-    if not patched.is_dir():
-        patched = Path(__file__).resolve().parent / "patches" / "u2c-patched"
-    patched_applied = False
-    if patched.is_dir():
-        target = site_packages / "u2c"
-        if not target.is_dir():
-            fail(f"installed package not found: {target}")
-        for source in patched.rglob("*.py"):
-            destination = target / source.relative_to(patched)
-            destination.parent.mkdir(parents=True, exist_ok=True)
-            destination.write_bytes(source.read_bytes())
-        patched_applied = True
-
     state = Path(args.state).resolve() if args.state else root / "state"
     state.mkdir(parents=True, exist_ok=True)
     launcher = root / "u2c-medium.cmd"
@@ -151,7 +137,7 @@ def main():
     input_ok = bool(capabilities.get("input_integrity_ok"))
     warnings = []
     if "input_integrity_ok" not in capabilities:
-        warnings.append("runtime does not report integrity; the patched overlay is missing")
+        warnings.append("runtime does not report input_integrity_ok; check the bundled runtime's doctor compatibility")
     elif not input_ok:
         warnings.append(
             f"launcher ran at '{integrity}' integrity; desktop input needs medium integrity. "
